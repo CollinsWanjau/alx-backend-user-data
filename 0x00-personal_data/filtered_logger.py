@@ -82,6 +82,12 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 
 
 def main():
+    """
+    Main function to retrieve and log user data from a MySQL database.
+
+    Returns:
+        None
+    """
     db = get_db()
     cursor = db.cursor()
     cursor.execute = "SELECT * FROM users"
