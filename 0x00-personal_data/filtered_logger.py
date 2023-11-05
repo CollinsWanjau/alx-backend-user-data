@@ -7,6 +7,8 @@ import logging
 import re
 from typing import Any, List
 import logging
+import mysql.connector
+import os
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -55,6 +57,44 @@ def get_logger() -> logging.Logger:
 
 
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Returns a connector to the database
+    """
+    db_host = os.environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    db_username = os.environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+    db_password = os.environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    db_name = os.environ.get("PERSONAL_DATA_DB_NAME", "")
+
+    if db_name is None:
+        raise ValueError("The required PERSONAL_DATA_DB_NAME is missing.")
+
+    connection = mysql.connector.connect(
+        host=db_host,
+        user=db_username,
+        password=db_password,
+        database=db_name
+    )
+
+    return connection
+
+
+def main():
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute = "SELECT * FROM users"
+    field_names = [i[0] for i in cursor.description]
+
+    logger = get_logger()
+
+    for row in cursor:
+        str_row = ''.join(f'{f}={str(r)};' for r, f in zip(row, field_names))
+        logger.info(str_row.strip())
+
+    cursor.close()
+    db.close()
 
 
 class RedactingFormatter(logging.Formatter):
