@@ -26,6 +26,37 @@ def filter_datum(fields: List[str], redaction: str,
     return message
 
 
+def get_logger() -> logging.Logger:
+    """
+    Create and configure a logger for handling user data with sensitive
+    information redaction.
+
+    Returns:
+        logging.Logger: The configured logger for user data.
+    """
+    # Create the logger with the name user_data and set its level to
+    # `loggin.INFO`
+    user_data_logger = logging.getLogger("user_data")
+    user_data_logger.setLevel(logging.INFO)
+    # Disable propagation to other loggers (default behaviour)
+    user_data_logger.propagate = False
+    # create a stream handler
+    stream_handler = logging.StreamHandler()
+    # create a redactingformatter instance
+    redacting_formatter = RedactingFormatter(list(PII_FIELDS))
+    # set the formatter for the Streamhandler to the RedactingFormatter
+    stream_handler.setFormatter(redacting_formatter)
+    stream_handler.setLevel(logging.INFO)
+    # add the stream handler to the "use_data" logger
+    user_data_logger.addHandler(stream_handler)
+
+    # user_data_logger.propagate = False
+    return user_data_logger
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
 class RedactingFormatter(logging.Formatter):
     """
     Custom logging formatter for redacting sensitive information in log
