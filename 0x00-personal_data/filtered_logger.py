@@ -28,7 +28,19 @@ def filter_datum(fields: List[str], redaction: str,
 
 class RedactingFormatter(logging.Formatter):
     """
-    Redacting Formatter class
+    Custom logging formatter for redacting sensitive information in log
+    messages.
+    This formatter extends the base logging.Formatter to provide redacted log
+    messages by replacing sensitive information with a predefined redaction
+    string.
+
+    Attributes:
+        - REDACTION (str): The redaction string used to replace sensitive
+        information.
+        - FORMAT (str): The log message format, including placeholders for
+        various log record fields.
+        SEPARATOR (str): The separator used to join multiple log messages when
+        redacting multiple items.
     """
 
     REDACTION = "***"
@@ -36,10 +48,38 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
+        """
+        Initializes a RedactingFormatter instance.
+
+        Args:
+        fields (List[str]): A list of strings representing the fields to be
+        redacted in log messages.
+        """
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
+        """
+        Format a log record after redacting sensitive information in the log
+        message.
+
+         Args:
+        record (logging.LogRecord): The log record to be formatted.
+
+        Returns:
+            str: The formatted log message.
+
+        Parameters:
+            - `self.fields`: A list of strings representing fields to be
+            redacted.
+            - `self.REDACTION`: The redaction string (e.g., '***').
+            - `self.SEPARATOR`: The character used to separate fields in the
+            log message.
+
+        After filtering the log message, this method calls the `format` method
+        of the parent class (logging.Formatter) to complete the formatting
+        process.
+        """
         # We first call the filter_datum to filter out sensitive information
         record.msg = filter_datum(self.fields, self.REDACTION, record.msg,
                                   self.SEPARATOR)
