@@ -26,16 +26,11 @@ def stats() -> str:
     return jsonify(stats)
 
 
-@app_views.route('/unauthorized', methods=['GET'])
-def unauthorized_endpoint() -> str:
-    """
-    Handle the unauthorized endpoint.
+@app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
+def unauthorized() -> str:
+    """ Handle GET requests for the '/Unauthorized' route.
 
     Returns:
-        str: A message indicating that the endpoint is unauthorized.
-
-    Raises:
-        01 Error: This endpoint raises a 401 error using Flask's abort
-        function.
+        str: A string indicating 'Unauthorized'.
     """
-    abort(401)
+    abort(401, description='Unauthorized')
