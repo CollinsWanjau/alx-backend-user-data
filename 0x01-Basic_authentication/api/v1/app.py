@@ -12,7 +12,7 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 #  configuring Cross-Origin Resource Sharing (CORS). This configuration allows
-#  any domain to access resources under the "/api/v1/" route. 
+#  any domain to access resources under the "/api/v1/" route.
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
 # Read the AUTH_TYPE environment variable
@@ -28,20 +28,35 @@ else:
 
 @app.before_request
 def before_request():
+    """
+    This function is a before_request handler in a web application using Flask.
+    It is used to perform certain checks before handling incoming requests.
+
+    Before each incoming request, this function checks if authentication (auth)
+    is available. If auth is not available, it does nothing. If auth is
+    available, it proceeds to check the request path against a list of
+    exception paths. If the request path is not in the exception list, it
+    performs further authentication checks.
+
+    Raises:
+        401: If the request path is not in the exception list and no valid
+        authorization header is provided, it aborts the request with a 401
+        error (unauthorized).
+    """
     if auth is None:
         pass
     else:
         exception_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                            '/api/v1/forbidden/']
-        
+
         if auth.require_auth(request.path, exception_paths):
-             authorization_header = auth.authorization_header(request)
-             if authorization_header is None:
+            authorization_header = auth.authorization_header(request)
+            if authorization_header is None:
                 abort(401, description='unauthorized')
-             current_user = auth.current_user(request)
-             if current_user is None:
+            current_user = auth.current_user(request)
+            if current_user is None:
                 abort(403, description='Forbidden')
-        
+
 
 @app.errorhandler(404)
 def not_found(error) -> str:
