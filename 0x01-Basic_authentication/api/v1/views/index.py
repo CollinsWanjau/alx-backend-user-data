@@ -35,3 +35,18 @@ def unauthorized() -> str:
         str: _description_
     """
     abort(401, description='Unauthorized')
+
+
+@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+def forbidden() -> str:
+    """
+    Handle a Forbidden error by returning a message and status code.
+
+    Returns:
+      str: A message indicating that the request is forbidden
+
+    Raises:
+      HTTPError: Aborts the request with a 403 Forbidden status code and a
+      description.
+    """
+    abort(403, description='Forbidden')
