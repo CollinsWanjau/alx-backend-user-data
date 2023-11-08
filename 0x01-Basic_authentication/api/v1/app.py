@@ -11,8 +11,37 @@ import os
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
+#  configuring Cross-Origin Resource Sharing (CORS). This configuration allows
+#  any domain to access resources under the "/api/v1/" route. 
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+auth = None
+# Read the AUTH_TYPE environment variable
+auth_type = os.environ.get('AUTH_TYPE')
 
+# create an instance of Auth based on the AUTH_TYPE
+if auth_type == 'auth':
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+else:
+    auth = None
+
+
+@app.before_request
+def before_request():
+    if auth is None:
+        pass
+    else:
+        exception_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                           '/api/v1/forbidden/']
+        
+        if auth.require_auth(request.path, exception_paths):
+             authorization_header = auth.authorization_header(request)
+             if authorization_header is None:
+                abort(401, description='unauthorized')
+             current_user = auth.current_user(request)
+             if current_user is None:
+                abort(403, description='Forbidden')
+        
 
 @app.errorhandler(404)
 def not_found(error) -> str:
