@@ -35,9 +35,6 @@ class Auth():
         for excluded in excluded_paths:
             # check if 'path' is equal to 'excluded_path' or a prefix of it
             # with a trailing slash
-            # if path == excluded_paths or (path.startswith(excluded)\
-            #     and path[len(excluded_paths):].startswith('/')):
-            #         return False
             if excluded.startswith(path):
                 return False
             elif path.startswith(excluded):
@@ -60,7 +57,12 @@ class Auth():
             str: The authorization header as a string, or None if the request
             is not provided.
         """
-        return None
+        if request is None:
+            return None
+        header = request.headers.get('Authorization')
+        if header is None:
+            return None
+        return header
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
