@@ -7,6 +7,7 @@ authentication mechanism for a web application.
 
 import uuid
 from api.v1.auth.auth import Auth
+from api.v1.views.users import User
 
 
 class SessionAuth(Auth):
@@ -43,7 +44,30 @@ class SessionAuth(Auth):
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
         """
+        Return User ID based on a given Session ID.
+
+        Args:
+            session_id: The Session ID.
+        Return:
+            The User ID associated with the Session ID.
+            Returns None if session_id is None or not a string.
         """
         if session_id is None or not isinstance(session_id, str):
             return None
         return self.user_id_by_session_id.get(session_id, None)
+
+    def current_user(self, request=None) -> User:
+        """
+        """
+        # Return the session cookie value
+        session_cookie_value = self.session_cookie(request)
+
+        if session_cookie_value is None:
+            return None
+
+        # Retrieve the User ID based on the session cookie value
+        user_id = self.user_id_for_session_id(session_cookie_value)
+        if user_id is None:
+            return None
+
+        return User.get(user_id)
