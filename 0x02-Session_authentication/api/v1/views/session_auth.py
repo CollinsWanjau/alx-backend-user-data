@@ -12,6 +12,15 @@ from models.user import User
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def auth_session_login():
     """
+    Handle user login using Session authentication.
+
+    This route expects a POST request with 'email' and 'password' parameters
+    in the form data.
+
+    Returns:
+        JSON representation of the User with a session cookie.
+        Returns appropriate error responses if parameters are missing, the user
+        is not found, the password is incorrect, or an unexpected error occurs.
     """
     email = request.form.get('email')
     password = request.form.get('password')
