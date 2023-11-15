@@ -29,7 +29,7 @@ class SessionAuth(Auth):
         if user_id is None:
             return None
 
-        if not isinstance('user_id', str):
+        if not isinstance(user_id, str):
             return None
 
         session_id = str(uuid.uuid4())
