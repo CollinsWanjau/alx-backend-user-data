@@ -13,7 +13,7 @@ Base = declarative_base()
 class User(Base):
     """
     User class represents a table 'users' in our database.
-    Each attribute of the User class represents a column in our table. 
+    Each attribute of the User class represents a column in our table.
     """
     __tablename__ = 'users'
 
