@@ -60,9 +60,9 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    # @_session.setter
-    # def _session(self, value):
-    #     self.__session = value
+    @_session.setter
+    def _session(self, value):
+        self.__session = value
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Add a new user to the database
@@ -83,13 +83,14 @@ class DB:
         return user
 
     def find_user_by(self, **kwargs):
-        # try:
-        #     row = self._session.query(User).filter_by(**kwargs).first()
-        #     if row is None:
-        #         raise NoResultFound
-        #     return row
-        # except InvalidRequestError:
-        #     raise InvalidRequestError
+        """
+        Find a user in the database based on the provided criteria.
+
+        :param kwargs: Key-value pairs specifying the criteria for the search.
+        :return: The found user row.
+        :raises NoResultFound: If no user is found.
+        :raises InvalidRequestError: If there is an invalid request.
+        """ 
         for key in kwargs:
             if not hasattr(User, key):
                 raise InvalidRequestError
@@ -97,3 +98,14 @@ class DB:
         if user is None:
             raise NoResultFound
         return user
+    
+    def update_user(self, user_id: int, **kwargs) -> None:
+        """"""
+        try:
+            user = self.find_user_by(id=user_id)
+            for key, value in kwargs.items():
+                setattr(user, key, value)
+            self._session.commit()
+        except ValueError as e:
+                raise e
+            
