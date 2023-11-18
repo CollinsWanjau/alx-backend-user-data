@@ -5,8 +5,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.exc import NoResultFound, InvalidRequestError
+
 
 from user import Base, User
+from typing import Dict, List
 
 
 class DB:
@@ -28,7 +31,7 @@ class DB:
         This method initializes a new DB instance, creates the database tables
         if they don't exist, and sets up the database engine.
         """
-        self._engine = create_engine("sqlite:///a.db", echo=True)
+        self._engine = create_engine("sqlite:///a.db", echo=False)
 
         # Drops all tables in the db if any
         Base.metadata.drop_all(self._engine)
@@ -57,9 +60,9 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    # @_session.setter
-    # def _session(self, value):
-    #     self.__session = value
+    @_session.setter
+    def _session(self, value):
+        self.__session = value
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Add a new user to the database
@@ -77,4 +80,20 @@ class DB:
         user = User(email=email, hashed_password=hashed_password)
         self._session.add(user)
         self._session.commit()
+        return user
+
+    def find_user_by(self, **kwargs):
+        # try:
+        #     row = self._session.query(User).filter_by(**kwargs).first()
+        #     if row is None:
+        #         raise NoResultFound
+        #     return row
+        # except InvalidRequestError:
+        #     raise InvalidRequestError
+        for key in kwargs:
+            if not hasattr(User, key):
+                raise InvalidRequestError
+        user = self._session.query(User).filter_by(**kwargs).first()
+        if user is None:
+            raise NoResultFound
         return user
