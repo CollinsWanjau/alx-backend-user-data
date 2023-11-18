@@ -101,11 +101,20 @@ class DB:
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """"""
-        try:
-            user = self.find_user_by(id=user_id)
-            for key, value in kwargs.items():
-                setattr(user, key, value)
-            self.__session.add(user)
-            self._session.commit()
-        except ValueError as e:
-            raise e
+        # try:
+        #     user = self.find_user_by(id=user_id)
+        #     for key, value in kwargs.items():
+        #         setattr(user, key, value)
+        #     self.__session.add(user)
+        #     self._session.commit()
+        # except ValueError as e:
+        #     raise e
+        user = self.find_user_by(id=user_id)
+        for key, value in kwargs.items():
+            if not hasattr(user, key):
+                raise ValueError
+            setattr(user, key, value)
+
+        self.__session.add(user)
+        self.__session.commit()
+        return None
