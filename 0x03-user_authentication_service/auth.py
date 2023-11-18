@@ -5,7 +5,7 @@
 import bcrypt
 
 
-def _hash_password(password: str) -> bytes:
+def _hash_password(password: str) -> str:
     """
     Hash the input password using bcrypt with salt.
 
