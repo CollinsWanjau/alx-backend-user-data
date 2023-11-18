@@ -39,7 +39,7 @@ class DB:
         # Creates new tables based on the definitions in the base class
         Base.metadata.create_all(self._engine)
 
-        self._session = None
+        self.__session = None
 
     @property
     def _session(self) -> None:
@@ -60,9 +60,9 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    @_session.setter
-    def _session(self, value):
-        self.__session = value
+    # @_session.setter
+    # def _session(self, value):
+    #     self.__session = value
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """Add a new user to the database
@@ -105,6 +105,7 @@ class DB:
             user = self.find_user_by(id=user_id)
             for key, value in kwargs.items():
                 setattr(user, key, value)
+            self.__session.add(user)
             self._session.commit()
         except ValueError as e:
                 raise e
