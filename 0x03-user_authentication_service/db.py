@@ -100,15 +100,15 @@ class DB:
         return user
 
     def update_user(self, user_id: int, **kwargs) -> None:
-        """"""
-        # try:
-        #     user = self.find_user_by(id=user_id)
-        #     for key, value in kwargs.items():
-        #         setattr(user, key, value)
-        #     self.__session.add(user)
-        #     self._session.commit()
-        # except ValueError as e:
-        #     raise e
+        """
+        Update user attributes and commit changes to the database.
+
+        :param user_id: The ID of the user to update.
+        :param kwargs: Arbitrary keyword arguments representing the attributes
+        to update.
+        :return: None
+        """
+
         user = self.find_user_by(id=user_id)
         for key, value in kwargs.items():
             if not hasattr(user, key):
